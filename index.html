@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نادي الهندسة الميكانيكية</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Cairo',sans-serif;
+    background:linear-gradient(135deg,#000000,#ff7b00);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    direction:rtl;
+    overflow:hidden;
+}
+
+/* Background Gears */
+.gear-bg{
+    position:absolute;
+    color:rgba(255,140,0,0.07);
+    z-index:0;
+}
+
+.gear1{
+    font-size:260px;
+    top:-70px;
+    left:-70px;
+    animation:rotate 30s linear infinite;
+}
+
+.gear2{
+    font-size:200px;
+    bottom:-60px;
+    right:-60px;
+    animation:rotateReverse 20s linear infinite;
+}
+
+@keyframes rotate{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+}
+
+@keyframes rotateReverse{
+    from{ transform:rotate(360deg); }
+    to{ transform:rotate(0deg); }
+}
+
+/* Card */
+.container{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    width:90%;
+    max-width:420px;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(20px);
+    padding:40px 25px;
+    border-radius:25px;
+    box-shadow:0 25px 60px rgba(255,120,0,0.4);
+}
+
+.logo{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:20px;
+    box-shadow:0 0 35px rgba(255,140,0,0.6);
+}
+
+h1{
+    font-size:22px;
+    margin-bottom:30px;
+    color:#ffffff;
+}
+
+/* Buttons */
+.link-btn{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#ffffff;
+    padding:14px 20px;
+    margin:12px 0;
+    border-radius:50px;
+    text-decoration:none;
+    color:#333;
+    font-size:16px;
+    font-weight:600;
+    transition:0.3s ease;
+}
+
+.link-btn i{
+    font-size:20px;
+}
+
+.link-btn{
+    flex-direction:row-reverse;
+}
+
+.link-btn:hover{
+    transform:translateY(-4px) scale(1.03);
+    box-shadow:0 12px 30px rgba(255,140,0,0.5);
+}
+
+/* App Colors */
+.tiktok i{ color:#000; }
+.instagram i{ color:#E1306C; }
+.facebook i{ color:#1877F2; }
+.telegram i{ color:#0088cc; }
+
+/* Footer */
+.footer{
+    margin-top:25px;
+    color:#ffae42;
+    font-size:15px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+}
+
+/* Fire Gear Animation */
+.fire-gear{
+    color:#ffae00;
+    font-size:20px;
+    animation:fireSpin 3s linear infinite, fireGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes fireSpin{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+}
+
+@keyframes fireGlow{
+    from{ 
+        text-shadow:0 0 5px #ff6600,
+                    0 0 10px #ff3300,
+                    0 0 20px #ff0000;
+    }
+    to{ 
+        text-shadow:0 0 15px #ff9900,
+                    0 0 25px #ff5500,
+                    0 0 40px #ff0000;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<i class="fas fa-cog gear-bg gear1"></i>
+<i class="fas fa-cog gear-bg gear2"></i>
+
+<div class="container">
+
+    <img src="logo.png" class="logo" alt="Mechanical Engineering Club Logo">
+
+    <h1>نادي الهندسة الميكانيكية</h1>
+
+    <!-- TikTok -->
+    <a href="https://www.tiktok.com/@lm_e_cl" target="_blank" rel="noopener noreferrer" class="link-btn tiktok">
+        <span>TikTok</span>
+        <i class="fab fa-tiktok"></i>
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/lm_e_cl/" target="_blank" rel="noopener noreferrer" class="link-btn instagram">
+        <span>Instagram</span>
+        <i class="fab fa-instagram"></i>
+    </a>
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/share/1DnxmH3VUb/" target="_blank" rel="noopener noreferrer" class="link-btn facebook">
+        <span>Facebook</span>
+        <i class="fab fa-facebook-f"></i>
+    </a>
