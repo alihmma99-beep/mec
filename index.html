@@ -1,321 +1,1090 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نادي الهندسة الميكانيكية</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النادي الميكانيكي | تروس واقعية مع شرر</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        body {
+            font-family: 'Tajawal', sans-serif;
+            direction: rtl;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+        }
 
-<style>
-:root{
-  --primary:#f7931e;
-  --secondary:#00e5ff;
-}
+        /* ========== INTRO ========== */
+        .mechanical-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 10000;
+            background: #000;
+            transition: clip-path 1.8s cubic-bezier(0.7, 0, 0.3, 1);
+            clip-path: circle(150% at 50% 50%);
+        }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+        .mechanical-intro.hide {
+            clip-path: circle(0% at 50% 50%);
+        }
 
-body{
-  font-family:'Tajawal',sans-serif;
-  direction:rtl;
-  background:#0b0f19;
-  color:white;
-  overflow:hidden;
-}
+        #gearCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
 
-/* ================= INTRO ================= */
+        .intro-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
 
-.intro{
-  position:fixed;
-  inset:0;
-  background:black;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  z-index:9999;
-  overflow:hidden;
-}
+        .intro-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            text-align: center;
+            width: 100%;
+            padding: 2rem;
+            pointer-events: none;
+        }
 
-.flash{
-  position:absolute;
-  width:200px;
-  height:200px;
-  background:radial-gradient(circle,#00e5ff,transparent 70%);
-  animation:flash 1.2s ease forwards;
-}
+        .intro-badge {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: rgba(255, 140, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff8c00;
+            border-radius: 100px;
+            margin-bottom: 2rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff8c00;
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideUp 1s ease forwards 0.5s;
+            box-shadow: 0 0 50px rgba(255,140,0,0.3);
+            pointer-events: auto;
+            letter-spacing: 2px;
+        }
 
-@keyframes flash{
-  0%{transform:scale(0);opacity:1;}
-  100%{transform:scale(8);opacity:0;}
-}
+        .intro-badge i {
+            margin: 0 15px;
+            animation: spin 10s linear infinite;
+        }
 
-.gear{
-  position:absolute;
-  border:2px solid rgba(255,255,255,0.07);
-  border-radius:50%;
-  animation:rotate 35s linear infinite;
-}
+        .intro-title {
+            margin-bottom: 1.5rem;
+        }
 
-.gear.big{width:600px;height:600px;}
-.gear.small{
-  width:350px;height:350px;
-  animation-direction:reverse;
-}
+        .intro-title .ar {
+            display: block;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #fff, #ff8c00, #ff5500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(255,140,0,0.5);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 1s ease forwards 1s;
+        }
 
-@keyframes rotate{
-  from{transform:rotate(0);}
-  to{transform:rotate(360deg);}
-}
+        .intro-title .en {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: transparent;
+            -webkit-text-stroke: 2px #ff8c00;
+            text-shadow: 0 0 30px rgba(255,140,0,0.5);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 1s ease forwards 1.3s;
+        }
 
-.spark{
-  position:absolute;
-  width:4px;
-  height:4px;
-  background:#00e5ff;
-  border-radius:50%;
-  box-shadow:0 0 20px #00e5ff;
-  animation:sparkMove 1s linear infinite;
-}
+        .intro-desc {
+            font-size: 1.5rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 1s ease forwards 1.6s;
+        }
 
-@keyframes sparkMove{
-  0%{transform:translate(0,0);opacity:1;}
-  100%{transform:translate(250px,-200px);opacity:0;}
-}
+        .intro-desc i {
+            color: #ff8c00;
+            margin: 0 10px;
+        }
 
-.intro-title{
-  font-size:3rem;
-  font-weight:900;
-  opacity:0;
-  transform:scale(.8);
-  animation:titleReveal 2s ease forwards 1.5s;
-  background:linear-gradient(180deg,#fff,#bbb,#666);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  text-align:center;
-}
+        /* تم حذف الإحصائيات هنا */
 
-@keyframes titleReveal{
-  0%{opacity:0;transform:scale(.8);}
-  50%{transform:scale(1.05);}
-  100%{opacity:1;transform:scale(1);}
-}
+        .loader-wrapper {
+            width: 500px;
+            margin: 2rem auto;
+            opacity: 0;
+            animation: slideUp 1s ease forwards 2s;
+        }
 
-.intro.hide{
-  opacity:0;
-  transition:1s ease;
-  pointer-events:none;
-}
+        .loader-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,140,0,0.2);
+            border-radius: 6px;
+            overflow: hidden;
+        }
 
-/* ================= HERO ================= */
+        .loader-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff8c00, #ff5500, #ffaa33, #ff8c00);
+            background-size: 200% 100%;
+            box-shadow: 0 0 30px #ff8c00;
+            animation: loadProgress 3s ease forwards, gradientShift 2s linear infinite;
+        }
 
-.hero{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
 
-.hero h1{
-  font-size:3rem;
-  margin-bottom:15px;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
+        @keyframes gradientShift {
+            from { background-position: 0% 0; }
+            to { background-position: 200% 0; }
+        }
 
-.club-slogan{
-  font-size:1.2rem;
-  font-weight:700;
-  margin-bottom:25px;
-  background:linear-gradient(90deg,var(--secondary),var(--primary));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
+        .loader-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.8rem;
+            color: #ff8c00;
+            font-size: 1rem;
+        }
 
-.top-icons{
-  display:flex;
-  gap:30px;
-  margin-bottom:30px;
-}
+        .enter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(135deg, #ff8c00, #ff5500);
+            border: none;
+            color: #000;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 1.2rem 3.5rem;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-top: 2rem;
+            opacity: 0;
+            animation: slideUp 1s ease forwards 2.5s;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px #ff8c00;
+            border: 2px solid rgba(255,255,255,0.2);
+            pointer-events: auto;
+        }
 
-.icon-item{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-}
+        .enter-btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 0 80px #ff8c00;
+        }
 
-.circle{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:1.5rem;
-  margin-bottom:8px;
-  transition:.4s;
-}
+        .enter-btn i {
+            transition: 0.3s;
+        }
 
-.icon-item:hover .circle{
-  transform:translateY(-8px) scale(1.1);
-  box-shadow:0 0 25px var(--secondary);
-}
+        .enter-btn:hover i {
+            transform: translateX(-10px);
+        }
 
-.social-links{
-  display:flex;
-  gap:20px;
-  margin-top:25px;
-}
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
 
-.social-links a{
-  width:45px;
-  height:45px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  color:white;
-  text-decoration:none;
-  transition:.3s;
-}
+        .enter-btn:hover::before {
+            left: 100%;
+        }
 
-.social-links a:hover{
-  transform:translateY(-6px);
-  box-shadow:0 0 20px var(--primary);
-}
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-/* ================= POPUP ================= */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-.popup{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(6px);
-  opacity:0;
-  pointer-events:none;
-  transition:.4s;
-}
+        /* ========== MAIN PAGE ========== */
+        .main-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(ellipse at top, #1a0f00, #000);
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease;
+            padding: 2rem;
+        }
 
-.popup.active{
-  opacity:1;
-  pointer-events:auto;
-}
+        .main-page.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
-.popup-content{
-  width:90%;
-  max-width:500px;
-  background:#111827;
-  border-radius:20px;
-  padding:40px;
-  position:relative;
-  box-shadow:0 0 40px rgba(0,229,255,.3);
-}
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 2rem;
+        }
 
-.close-btn{
-  position:absolute;
-  top:10px;
-  left:15px;
-  cursor:pointer;
-}
-</style>
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #ff8c00, #ff5500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 50px rgba(255,140,0,0.5);
+        }
+
+        .slogan {
+            font-size: 1.8rem;
+            color: #ff8c00;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        /* Social Icons (Top) */
+        .social-section {
+            margin: 4rem 0;
+            padding: 2rem;
+            background: rgba(255,140,0,0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            border: 1px solid rgba(255,140,0,0.2);
+        }
+
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .social-item {
+            position: relative;
+            width: 110px;
+            height: 110px;
+        }
+
+        .social-item a {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255,140,0,0.1);
+            border: 3px solid rgba(255,140,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff8c00;
+            font-size: 3.2rem;
+            text-decoration: none;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .social-item a::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, #ff8c00, transparent);
+            opacity: 0;
+            transition: 0.4s;
+            transform: scale(0.5);
+        }
+
+        .social-item a:hover {
+            transform: translateY(-15px) scale(1.15);
+            border-color: #ff8c00;
+            box-shadow: 0 0 70px #ff8c00;
+            color: #000;
+        }
+
+        .social-item a:hover::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .social-item span {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            color: #ff8c00;
+            opacity: 0;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .social-item:hover span {
+            opacity: 1;
+            bottom: -30px;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin: 4rem 0;
+        }
+
+        .divider-line {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff8c00, #ff5500, #ff8c00, transparent);
+        }
+
+        .divider-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,140,0,0.1);
+            border: 2px solid #ff8c00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff8c00;
+            font-size: 2rem;
+            animation: spin 10s linear infinite;
+        }
+
+        /* Info Icons (Bottom) */
+        .info-section {
+            margin: 4rem 0;
+        }
+
+        .info-grid {
+            display: flex;
+            justify-content: center;
+            gap: 5rem;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            text-align: center;
+            cursor: pointer;
+            width: 250px;
+        }
+
+        .info-icon {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255,140,0,0.1);
+            border: 3px solid #ff8c00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: #ff8c00;
+            margin: 0 auto 1.5rem;
+            transition: 0.4s;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 30px rgba(255,140,0,0.2);
+        }
+
+        .info-card:hover .info-icon {
+            background: #ff8c00;
+            color: #000;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 100px #ff8c00;
+        }
+
+        .info-card h3 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+
+        .footer {
+            margin-top: 5rem;
+            padding: 2rem;
+            background: rgba(255,140,0,0.05);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,140,0,0.3);
+            border-radius: 100px 100px 0 0;
+        }
+
+        .footer p {
+            color: #aaa;
+            font-size: 1.3rem;
+        }
+
+        .footer span {
+            color: #ff8c00;
+            font-weight: 700;
+            text-shadow: 0 0 20px #ff8c00;
+        }
+
+        .footer i {
+            color: #ff8c00;
+            margin: 0 10px;
+            animation: spin 10s linear infinite;
+        }
+
+        /* Popup */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.4s;
+        }
+
+        .popup.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-card {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border: 3px solid #ff8c00;
+            border-radius: 60px;
+            padding: 4rem;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            transform: scale(0.8) translateY(50px);
+            transition: 0.5s;
+            box-shadow: 0 0 150px #ff8c00;
+        }
+
+        .popup.active .popup-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,140,0,0.1);
+            border: 3px solid #ff8c00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff8c00;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .popup-close:hover {
+            background: #ff8c00;
+            color: #000;
+            transform: rotate(180deg) scale(1.2);
+        }
+
+        .popup-icon {
+            font-size: 6rem;
+            color: #ff8c00;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 60px #ff8c00;
+        }
+
+        .popup-card h2 {
+            font-size: 3.5rem;
+            color: #ff8c00;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 40px #ff8c00;
+        }
+
+        .popup-text {
+            color: #ccc;
+            line-height: 2;
+            font-size: 1.3rem;
+        }
+
+        .popup-text ul {
+            list-style: none;
+        }
+
+        .popup-text li {
+            margin-bottom: 1.5rem;
+            padding-right: 2rem;
+            position: relative;
+        }
+
+        .popup-text li::before {
+            content: '⚙';
+            position: absolute;
+            right: 0;
+            color: #ff8c00;
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px #ff8c00;
+        }
+
+        @media (max-width: 768px) {
+            .intro-title .ar { font-size: 3rem; }
+            .intro-title .en { font-size: 1.5rem; letter-spacing: 4px; }
+            .loader-wrapper { width: 300px; }
+            h1 { font-size: 3rem; }
+            .social-item { width: 80px; height: 80px; }
+            .social-item a { font-size: 2.5rem; }
+            .info-icon { width: 140px; height: 140px; font-size: 3.5rem; }
+            .info-card h3 { font-size: 1.8rem; }
+        }
+    </style>
 </head>
 <body>
-
-<!-- INTRO -->
-<div class="intro" id="intro">
-  <div class="flash"></div>
-  <div class="gear big"></div>
-  <div class="gear small"></div>
-  <div class="spark"></div>
-  <div class="intro-title">نادي الهندسة الميكانيكية</div>
-</div>
-
-<!-- HERO -->
-<div class="hero">
-
-  <h1>نادي الهندسة الميكانيكية</h1>
-  <div class="club-slogan">معًا نبني مستقبل الهندسة</div>
-
-  <div class="top-icons">
-    <div class="icon-item" onclick="openCard('about')">
-      <div class="circle"><i class="fas fa-users-cog"></i></div>
-      <span>من نحن</span>
+    <!-- Intro -->
+    <div class="mechanical-intro" id="mechanicalIntro">
+        <canvas id="gearCanvas"></canvas>
+        <div class="intro-overlay"></div>
+        <div class="intro-content">
+            <div class="intro-badge">
+                <i class="fas fa-cog"></i>
+                MEC
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="intro-title">
+                <span class="ar">نادي الهندسة الميكانيكية</span>
+                <span class="en">   
+                </span>
+            </div>
+            <div class="intro-desc">
+                <i class="fas fa-bolt"></i>
+                صناع المستقبل
+                <i class="fas fa-bolt"></i>
+            </div>
+            <!-- تم حذف الإحصائيات -->
+            <div class="loader-wrapper">
+                <div class="loader-track">
+                    <div class="loader-fill" id="loaderFill"></div>
+                </div>
+                <div class="loader-info">
+                    <span id="loaderPercent">0%</span>
+                    <span id="loaderMessage">تشغيل المحرك...</span>
+                </div>
+            </div>
+            <button class="enter-btn" id="enterBtn" onclick="enterSite()" disabled>
+                <span>اضغط</span>
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
     </div>
 
-    <div class="icon-item" onclick="openCard('vision')">
-      <div class="circle"><i class="fas fa-eye"></i></div>
-      <span>رؤيتنا</span>
+    <!-- Main Page -->
+    <div class="main-page" id="mainPage">
+        <div class="main-container">
+            <h1>نادي الهندسة الميكانيكية</h1>
+            <div class="slogan">MEC</div>
+
+            <!-- Social Icons (Top) -->
+            <div class="social-section">
+                <div class="social-grid">
+                    <div class="social-item">
+                        <a href="https://t.me/MEC_314"><i class="fab fa-telegram-plane"></i></a>
+                        <span>تليجرام</span>
+                    </div>
+                    <div class="social-item">
+                        <a href="https://www.facebook.com/share/1XjQjWSE2U/"><i class="fab fa-facebook-f"></i></a>
+                        <span>فيسبوك</span>
+                    </div>
+                    <div class="social-item">
+                        <a href="https://www.tiktok.com/@mec_314?_r=1&_t=ZS-94DuNgylBPE"><i class="fab fa-tiktok"></i></a>
+                        <span>تيك توك</span>
+                    </div>
+                    <div class="social-item">
+                        <a href="https://www.instagram.com/mec_314?igsh=MWgycjQ1YmVnNnMzMg=="><i class="fab fa-instagram"></i></a>
+                        <span>انستغرام</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Info Icons (Bottom) -->
+            <div class="info-section">
+                <div class="info-grid">
+                    <div class="info-card" onclick="openPopup('about')">
+                        <div class="info-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>من نحن</h3>
+                        <p>نادي الهندسة الميكانيكية</p>
+                    </div>
+                    <div class="info-card" onclick="openPopup('vision')">
+                        <div class="info-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3>رؤيتنا</h3>
+                        <p>معاً نحو آفاق هندسية غير مسبوقة</p>
+                    </div>
+                    <div class="info-card" onclick="openPopup('goals')">
+                        <div class="info-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3>أهدافنا</h3>
+                        <p>تطوير وابتكار مستمر</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>
+                    <i class="fas fa-cog"></i>
+                    © 2026
+                  <span>نادي الهندسة الميكانيكية</span> - جميع الحقوق محفوظة
+                    <i class="fas fa-cog"></i>
+                </p>
+            </footer>
+        </div>
     </div>
 
-    <div class="icon-item" onclick="openCard('goals')">
-      <div class="circle"><i class="fas fa-bullseye"></i></div>
-      <span>أهدافنا</span>
+    <!-- Popup -->
+    <div class="popup" id="popup" onclick="closePopup()">
+        <div class="popup-card" onclick="event.stopPropagation()">
+            <div class="popup-close" onclick="closePopup()">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="popup-icon" id="popupIcon"></div>
+            <h2 id="popupTitle"></h2>
+            <div class="popup-text" id="popupText"></div>
+        </div>
     </div>
-  </div>
 
-  <div class="social-links">
-    <a href="https://www.facebook.com/share/184soRE7YD/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-    <a href="https://t.me/lM_E_Cl" target="_blank"><i class="fab fa-telegram-plane"></i></a>
-    <a href="https://www.instagram.com/lm_e_cl/" target="_blank"><i class="fab fa-instagram"></i></a>
-    <a href="https://www.tiktok.com/@lm_e_cl" target="_blank"><i class="fab fa-tiktok"></i></a>
-  </div>
+    <script>
+        // Three.js Scene
+        const canvas = document.getElementById('gearCanvas');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050505);
+        scene.fog = new THREE.Fog(0x050505, 10, 30);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 15);
+        
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        
+        // إضاءة متطورة
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        
+        const mainLight = new THREE.DirectionalLight(0xccaa88, 1.5);
+        mainLight.position.set(2, 5, 5);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 1024;
+        mainLight.shadow.mapSize.height = 1024;
+        scene.add(mainLight);
+        
+        const backLight = new THREE.PointLight(0x335588, 0.8);
+        backLight.position.set(-3, 1, -5);
+        scene.add(backLight);
+        
+        const sparkLight = new THREE.PointLight(0xff6600, 2, 10);
+        sparkLight.position.set(0, 0, 3);
+        scene.add(sparkLight);
+        
+        const redLight = new THREE.PointLight(0xaa2222, 0.5);
+        redLight.position.set(1, 1, 2);
+        scene.add(redLight);
 
-</div>
+        // ===== إنشاء تروس رصاصية واقعية =====
+        
+        function createMetalGear(radius, teeth, width, color, metalness, roughness, posX, posY, posZ) {
+            const group = new THREE.Group();
+            
+            const bodyGeo = new THREE.CylinderGeometry(radius, radius, width, 64);
+            const bodyMat = new THREE.MeshStandardMaterial({ 
+                color: color,
+                emissive: 0x111111,
+                metalness: metalness,
+                roughness: roughness,
+                emissiveIntensity: 0.1
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.castShadow = true;
+            body.receiveShadow = true;
+            body.position.y = 0;
+            group.add(body);
+            
+            for (let i = 0; i < teeth; i++) {
+                const angle = (i / teeth) * Math.PI * 2;
+                
+                const toothGeo = new THREE.BoxGeometry(0.5, width + 0.2, 1.4);
+                const toothMat = new THREE.MeshStandardMaterial({ 
+                    color: color,
+                    metalness: metalness,
+                    roughness: roughness * 0.8
+                });
+                const tooth = new THREE.Mesh(toothGeo, toothMat);
+                tooth.position.x = Math.sin(angle) * (radius + 0.7);
+                tooth.position.z = Math.cos(angle) * (radius + 0.7);
+                tooth.position.y = 0;
+                tooth.rotation.y = angle;
+                tooth.castShadow = true;
+                tooth.receiveShadow = true;
+                group.add(tooth);
+                
+                const tipGeo = new THREE.BoxGeometry(0.3, width + 0.1, 0.4);
+                const tipMat = new THREE.MeshStandardMaterial({ 
+                    color: 0xcccccc,
+                    metalness: 0.9,
+                    roughness: 0.2
+                });
+                const tip = new THREE.Mesh(tipGeo, tipMat);
+                tip.position.x = Math.sin(angle) * (radius + 1.2);
+                tip.position.z = Math.cos(angle) * (radius + 1.2);
+                tip.position.y = 0;
+                tip.rotation.y = angle;
+                tip.castShadow = true;
+                tip.receiveShadow = true;
+                group.add(tip);
+            }
+            
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2;
+                const holeGeo = new THREE.CylinderGeometry(0.4, 0.4, width + 0.2, 8);
+                const holeMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.7 });
+                const hole = new THREE.Mesh(holeGeo, holeMat);
+                hole.position.x = Math.sin(angle) * (radius * 0.6);
+                hole.position.z = Math.cos(angle) * (radius * 0.6);
+                hole.position.y = 0;
+                hole.castShadow = true;
+                hole.receiveShadow = true;
+                group.add(hole);
+            }
+            
+            const centerGeo = new THREE.CylinderGeometry(0.9, 0.9, width + 0.1, 16);
+            const centerMat = new THREE.MeshStandardMaterial({ color: 0xaa8866, metalness: 0.9, roughness: 0.2 });
+            const center = new THREE.Mesh(centerGeo, centerMat);
+            center.position.y = 0;
+            center.castShadow = true;
+            center.receiveShadow = true;
+            group.add(center);
+            
+            const boltGeo = new THREE.CylinderGeometry(0.3, 0.3, width + 0.3, 6);
+            const boltMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.1 });
+            const bolt = new THREE.Mesh(boltGeo, boltMat);
+            bolt.position.y = 0;
+            bolt.rotation.y = Math.PI / 6;
+            bolt.castShadow = true;
+            bolt.receiveShadow = true;
+            group.add(bolt);
+            
+            group.position.set(posX, posY, posZ);
+            return group;
+        }
+        
+        const gear1 = createMetalGear(2.2, 24, 0.9, 0x8899aa, 0.9, 0.3, -2.2, 0.2, 0);
+        const gear2 = createMetalGear(1.6, 18, 0.7, 0x778899, 0.9, 0.4, 2.3, -0.1, -0.8);
+        const gear3 = createMetalGear(1.0, 12, 0.6, 0x99aabb, 0.9, 0.2, -0.8, -0.3, 1.5);
+        
+        scene.add(gear1);
+        scene.add(gear2);
+        scene.add(gear3);
+        
+        const rustRingGeo = new THREE.TorusGeometry(3.8, 0.1, 16, 100);
+        const rustRingMat = new THREE.MeshStandardMaterial({ color: 0xaa5533, metalness: 0.3, roughness: 0.9 });
+        const rustRing = new THREE.Mesh(rustRingGeo, rustRingMat);
+        rustRing.rotation.x = Math.PI / 2;
+        rustRing.position.y = -0.5;
+        rustRing.scale.set(1, 1, 0.3);
+        scene.add(rustRing);
 
-<!-- POPUP -->
-<div class="popup" id="popup" onclick="closeCard()">
-  <div class="popup-content" onclick="event.stopPropagation()">
-    <span class="close-btn" onclick="closeCard()">✖</span>
-    <h2 id="popup-title"></h2>
-    <div id="popup-text"></div>
-  </div>
-</div>
+        // ===== نظام الشرر الناري =====
+        const sparkCount = 200;
+        const sparkGeo = new THREE.BufferGeometry();
+        const sparkPositions = new Float32Array(sparkCount * 3);
+        const sparkColors = new Float32Array(sparkCount * 3);
+        const sparkSizes = new Float32Array(sparkCount);
+        const sparkSpeeds = [];
+        
+        for (let i = 0; i < sparkCount; i++) {
+            sparkPositions[i*3] = (Math.random() - 0.5) * 8;
+            sparkPositions[i*3+1] = (Math.random() - 0.5) * 5;
+            sparkPositions[i*3+2] = (Math.random() - 0.5) * 8;
+            
+            const r = 1.0;
+            const g = 0.4 + Math.random() * 0.6;
+            const b = 0.0;
+            sparkColors[i*3] = r;
+            sparkColors[i*3+1] = g;
+            sparkColors[i*3+2] = b;
+            
+            sparkSizes[i] = 0.1 + Math.random() * 0.2;
+            
+            sparkSpeeds.push({
+                x: (Math.random() - 0.5) * 0.02,
+                y: Math.random() * 0.03,
+                z: (Math.random() - 0.5) * 0.02
+            });
+        }
+        
+        sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
+        sparkGeo.setAttribute('color', new THREE.BufferAttribute(sparkColors, 3));
+        sparkGeo.setAttribute('size', new THREE.BufferAttribute(sparkSizes, 1));
+        
+        const sparkCanvas = document.createElement('canvas');
+        sparkCanvas.width = 32;
+        sparkCanvas.height = 32;
+        const sparkCtx = sparkCanvas.getContext('2d');
+        sparkCtx.fillStyle = '#ff8800';
+        sparkCtx.beginPath();
+        sparkCtx.arc(16, 16, 12, 0, Math.PI * 2);
+        sparkCtx.fill();
+        sparkCtx.globalCompositeOperation = 'source-atop';
+        sparkCtx.fillStyle = '#ffff00';
+        sparkCtx.beginPath();
+        sparkCtx.arc(16, 16, 6, 0, Math.PI * 2);
+        sparkCtx.fill();
+        
+        const sparkTexture = new THREE.CanvasTexture(sparkCanvas);
+        
+        const sparkMat = new THREE.PointsMaterial({
+            size: 0.2,
+            map: sparkTexture,
+            vertexColors: true,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        
+        const sparks = new THREE.Points(sparkGeo, sparkMat);
+        scene.add(sparks);
+        
+        // ===== جزيئات معدنية ناعمة =====
+        const dustCount = 400;
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPositions = new Float32Array(dustCount * 3);
+        
+        for (let i = 0; i < dustCount; i++) {
+            dustPositions[i*3] = (Math.random() - 0.5) * 12;
+            dustPositions[i*3+1] = (Math.random() - 0.5) * 8;
+            dustPositions[i*3+2] = (Math.random() - 0.5) * 12;
+        }
+        
+        dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+        
+        const dustMat = new THREE.PointsMaterial({
+            color: 0xaaaaff,
+            size: 0.03,
+            transparent: true,
+            blending: THREE.AdditiveBlending
+        });
+        
+        const dust = new THREE.Points(dustGeo, dustMat);
+        scene.add(dust);
+        
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            gear1.rotation.y += 0.01;
+            gear2.rotation.y -= 0.015;
+            gear3.rotation.y += 0.018;
+            
+            const positions = sparks.geometry.attributes.position.array;
+            for (let i = 0; i < sparkCount; i++) {
+                positions[i*3] += sparkSpeeds[i].x;
+                positions[i*3+1] += sparkSpeeds[i].y;
+                positions[i*3+2] += sparkSpeeds[i].z;
+                
+                if (Math.abs(positions[i*3]) > 6 || 
+                    Math.abs(positions[i*3+1]) > 4 || 
+                    Math.abs(positions[i*3+2]) > 6) {
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 2 + Math.random() * 3;
+                    positions[i*3] = Math.sin(angle) * dist;
+                    positions[i*3+1] = (Math.random() - 0.5) * 2;
+                    positions[i*3+2] = Math.cos(angle) * dist;
+                    
+                    sparkSpeeds[i] = {
+                        x: (Math.random() - 0.5) * 0.03,
+                        y: Math.random() * 0.04,
+                        z: (Math.random() - 0.5) * 0.03
+                    };
+                }
+            }
+            sparks.geometry.attributes.position.needsUpdate = true;
+            
+            dust.rotation.y += 0.0002;
+            
+            const time = Date.now() * 0.001;
+            camera.position.x = Math.sin(time * 0.15) * 2.5;
+            camera.position.y = 2 + Math.sin(time * 0.2) * 1.2;
+            camera.position.z = 14 + Math.sin(time * 0.1) * 1;
+            camera.lookAt(0, 0.5, 0);
+            
+            sparkLight.position.x = Math.sin(time * 2) * 3;
+            sparkLight.position.y = 1 + Math.sin(time * 3) * 1;
+            sparkLight.position.z = 2;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
 
-<script>
-setTimeout(()=>{
-  document.getElementById("intro").classList.add("hide");
-  document.body.style.overflow="auto";
-},4500);
-
-function openCard(type){
-  const popup=document.getElementById("popup");
-  const title=document.getElementById("popup-title");
-  const text=document.getElementById("popup-text");
-
-  if(type==="about"){
-    title.innerText="من نحن";
-    text.innerHTML="<p>نحن نادٍ طلابي يطوّر مهارات طلاب الهندسة الميكانيكية ويعزز الجانب التطبيقي والتحليل الهندسي.</p>";
-  }
-
-  if(type==="vision"){
-    title.innerText="رؤيتنا";
-    text.innerHTML="<p>نسعى لإعداد مهندسين متميزين قادرين على الابتكار والمنافسة والمساهمة في تطوير الأنظمة الصناعية.</p>";
-  }
-
-  if(type==="goals"){
-    title.innerText="أهدافنا";
-    text.innerHTML="<p>⚙ تنمية المهارات العملية<br>⚙ تعزيز التفكير التحليلي<br>⚙ دعم العمل الجماعي<br>⚙ ربط المعرفة بالتطبيق</p>";
-  }
-
-  popup.classList.add("active");
-}
-
-function closeCard(){
-  document.getElementById("popup").classList.remove("active");
-}
-</script>
-
+        // Loading simulation
+        let progress = 0;
+        const loaderFill = document.getElementById('loaderFill');
+        const loaderPercent = document.getElementById('loaderPercent');
+        const loaderMessage = document.getElementById('loaderMessage');
+        const enterBtn = document.getElementById('enterBtn');
+        
+        const messages = [
+            "تشغيل المحرك...",
+            "تدوير التروس...",
+            "إشعال الشرر...",
+            "تجهيز الواجهة...",
+            "النظام جاهز!"
+        ];
+        
+        const interval = setInterval(() => {
+            progress += 1;
+            loaderFill.style.width = progress + '%';
+            loaderPercent.textContent = progress + '%';
+            
+            const msgIndex = Math.floor((progress / 100) * messages.length);
+            if (msgIndex < messages.length) {
+                loaderMessage.textContent = messages[msgIndex];
+            }
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                loaderMessage.textContent = "اضغط للدخول";
+                enterBtn.disabled = false;
+            }
+        }, 40);
+        
+        function enterSite() {
+            if (progress < 100) return;
+            
+            document.getElementById('mechanicalIntro').classList.add('hide');
+            setTimeout(() => {
+                document.getElementById('mechanicalIntro').style.display = 'none';
+                document.getElementById('mainPage').classList.add('active');
+            }, 1800);
+        }
+        
+        function openPopup(type) {
+            const popup = document.getElementById('popup');
+            const icon = document.getElementById('popupIcon');
+            const title = document.getElementById('popupTitle');
+            const text = document.getElementById('popupText');
+            
+            if (type === 'about') {
+                icon.innerHTML = '<i class="fas fa-users"></i>';
+                title.textContent = 'من نحن';
+                text.innerHTML = '<p>نادي الهندسة الميكانيكية هو كيان طلابي تطوعي  يهدف إلى دعم الطلبة علميًا، مهاريًا، واجتماعيًا، من خلال أنشطة منظمة تكمّل المسار الأكاديمي وتسهم في تطوير الطالب كفرد ومهندس.</p>';
+            } else if (type === 'vision') {
+                icon.innerHTML = '<i class="fas fa-eye"></i>';
+                title.textContent = 'رؤيتنا';
+                text.innerHTML = '<p>أن يكون لطلبة الهندسة الميكانيكية بيئة طلابية فعّالة، يتميّز طُلابها بالكفاءة العلمية، الجاهزية العملية، والقدرة على المنافسة والتمثيل المشرف في المحافل الأكاديمية والمهنية محليًا وخارجيًا.</p>';
+            } else if (type === 'goals') {
+                icon.innerHTML = '<i class="fas fa-bullseye"></i>';
+                title.textContent = 'أهدافنا';
+                text.innerHTML = '<ul><li>تطوير المهارات العملية للطلاب</li><li>تنظيم ورش عمل متخصصة</li><li>المشاركة في المسابقات الهندسية</li><li>تنفيذ مشاريع تطبيقية</li><li>ربط الطلاب بسوق العمل</li></ul>';
+            }
+            
+            popup.classList.add('active');
+        }
+        
+        function closePopup() {
+            document.getElementById('popup').classList.remove('active');
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePopup();
+        });
+    </script>
 </body>
 </html>
